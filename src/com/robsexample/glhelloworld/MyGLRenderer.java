@@ -26,7 +26,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	private Vector3 m_CubeScale = new Vector3(0.2f, 0.1f, 0.1f);
 	
 	private Vector3 m_AccelerometerDeltas = new Vector3(0.f, 0.f, 0.f);
-	
+		
 	public MyGLRenderer(Context context) 
 	{
 	   m_Context = context; 
@@ -105,13 +105,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
         
 		 Texture[] CubeTex = new Texture[1];
 		 CubeTex[0] = TexAndroid;
-           
+		 
+		 Cube cube = CubeFactory.instance().create(iContext, CubeMesh, 
+				 CubeTex, Material1, Shader);     
         
-		 Cube cube = new Cube(iContext, 
+		 /*Cube cube = new Cube(iContext, 
 				 		   CubeMesh, 
         				   CubeTex, 
         				   Material1, 
-        				   Shader);
+        				   Shader);*/
           
 		 // Set Intial Position and Orientation
 		 Vector3 Axis = new Vector3(0,1,0);
@@ -121,9 +123,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 cube.m_Orientation.SetPosition(Position);
 		 cube.m_Orientation.SetRotationAxis(Axis);
 		 cube.m_Orientation.SetScale(Scale);
-		 
-		 m_Cubes.add(cube);
-		 
+		 		 
 		 //m_Cube.m_Orientation.AddRotation(45);
 	 }
 	 
@@ -207,14 +207,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		 GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
     	     
     		 m_Camera.UpdateCamera();
+    		 CubeFactory.instance().draw(m_Camera, m_PointLight);
     		 
+    		 /*
     		 for(Cube c : m_Cubes) {
 	    		 c.m_Orientation.AddRotation(1);
 	    		 
 	    		 //updateModelMatrix();
 	    		 
 	    		 c.DrawObject(m_Camera, m_PointLight);
-    		 }
+    		 }*/
     	}
 }
 

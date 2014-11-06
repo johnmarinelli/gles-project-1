@@ -2,6 +2,7 @@ package com.robsexample.glhelloworld;
 
 
 import android.content.Context;
+import com.robsexample.glhelloworld.Object3dFactory;
 
 public class Cube extends Object3d 
 {
