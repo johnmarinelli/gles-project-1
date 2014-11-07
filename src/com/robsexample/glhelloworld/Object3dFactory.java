@@ -1,5 +1,6 @@
 package com.robsexample.glhelloworld;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -18,15 +19,21 @@ public abstract class Object3dFactory {
 	
 	protected void register(Object3d obj) {
 		mRegisteredObjects.put(mIDCounter++, obj);
-		Log.i("id", Integer.toString(mIDCounter));
 	}
 	
-	/*
-	 * make this a function in an Object3dManager along with updating matrices etc
-	 */
-	public void draw(Camera camera, PointLight pointlight) {
+	public void clean() {
+		/* arraylist to store ID's of dirty objects */
+		ArrayList<Integer> dirty = new ArrayList<Integer>();
+		
 		for(Entry<Integer, Object3d> e : mRegisteredObjects.entrySet()) {
-			e.getValue().DrawObject(camera, pointlight);
+			if(e.getValue().getFlag()) {
+				dirty.add(e.getKey());
+			}
+		}
+		
+		/* clear out dirty objects */
+		for(Integer dInt : dirty) {
+			mRegisteredObjects.remove(dInt);
 		}
 	}
 }

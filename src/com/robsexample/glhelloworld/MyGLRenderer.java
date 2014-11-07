@@ -19,8 +19,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	
 	private int m_ViewPortWidth;
     private int m_ViewPortHeight;
+    
+    private Object3dManager mObject3dManager = new Object3dManager();
+    private long mLastUpdated;
 	
-	private ArrayList<Cube> m_Cubes = new ArrayList<Cube>();
 	private Vector3 m_CubePositionDelta = new Vector3(0.f, 0.f, 0.f);
 	private Vector3 m_CubeRotationAxisDelta = new Vector3(0.f, 0.f, 0.f);
 	private Vector3 m_CubeScale = new Vector3(0.2f, 0.1f, 0.1f);
@@ -30,6 +32,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public MyGLRenderer(Context context) 
 	{
 	   m_Context = context; 
+	   mLastUpdated = System.currentTimeMillis();
 	}
 	
 	 void SetupLights()
@@ -61,7 +64,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 void SetupCamera()
 	 {	
 		// Set Camera View
-		 Vector3 Eye = new Vector3(0,0,8);
+		 Vector3 Eye = new Vector3(0,0,10);
 	     Vector3 Center = new Vector3(0, 0,-1);
 	     Vector3 Up = new Vector3(0,1,0);  
 	        
@@ -108,12 +111,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 
 		 Cube cube = CubeFactory.instance().create(iContext, CubeMesh, 
 				 CubeTex, Material1, Shader);     
-        
-		 /*Cube cube = new Cube(iContext, 
-				 		   CubeMesh, 
-        				   CubeTex, 
-        				   Material1, 
-        				   Shader);*/
+		 mObject3dManager.add(cube);
           
 		 // Set Intial Position and Orientation
 		 Vector3 Axis = new Vector3(0,1,0);
@@ -123,7 +121,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 cube.m_Orientation.SetPosition(Position);
 		 cube.m_Orientation.SetRotationAxis(Axis);
 		 cube.m_Orientation.SetScale(Scale);
-		 		 
 		 //m_Cube.m_Orientation.AddRotation(45);
 	 }
 	 
@@ -154,13 +151,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 }
 	 
 	 private void updateModelMatrix() {
-		 for(Cube c : m_Cubes) {
+		 Cube c = null;
 			 Vector3 position = c.m_Orientation.GetPosition();
 			 /*
 			 if(position.x <= -2 || position.x >= 2) {
 				 //m_CubePositionDelta.Negate();
 			 }
-			 else { */	 
+			 else { */ 
 				 m_CubePositionDelta.x = m_AccelerometerDeltas.x;
 				 m_CubePositionDelta.y = m_AccelerometerDeltas.y;
 				 m_CubePositionDelta.z = m_AccelerometerDeltas.z;
@@ -174,7 +171,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			 m_CubeRotationAxisDelta.y = m_AccelerometerDeltas.y;
 			 Vector3 newRotationAxis = Vector3.Add(rotationAxis, m_CubeRotationAxisDelta);
 			 rotationAxis.Set(newRotationAxis.x, newRotationAxis.y, 0);
-		 }
+		 
 	 }
 	
     	@Override
@@ -183,7 +180,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		m_PointLight = new PointLight(m_Context);
     		SetupLights();
     		
-    		CreateCube(m_Context, new Vector3(0.f, 0.f, 0.f));
+    		CreateCube(m_Context, new Vector3(0.f, 0.f, 7.25f));
     		CreateCube(m_Context, new Vector3(1.f, 1.f, 0.f));
     	}
 
@@ -203,20 +200,26 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     	@Override
     	public void onDrawFrame(GL10 unused) 
     	{
-    		 GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-    		 GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
-    	     
-    		 m_Camera.UpdateCamera();
-    		 CubeFactory.instance().draw(m_Camera, m_PointLight);
-    		 
-    		 /*
-    		 for(Cube c : m_Cubes) {
-	    		 c.m_Orientation.AddRotation(1);
-	    		 
-	    		 //updateModelMatrix();
-	    		 
-	    		 c.DrawObject(m_Camera, m_PointLight);
-    		 }*/
+    		long currentTime = System.currentTimeMillis();
+    		
+    		if(currentTime - mLastUpdated > 2000) {
+    			float randomX = Utility.getRandomFloat(-.5f, .5f);
+    			float randomY = Utility.getRandomFloat(-.5f, .5f);
+    			float randomZ = Utility.getRandomFloat(-2, 1);
+    			
+    			CreateCube(m_Context, new Vector3(randomX, randomY, randomZ));
+    			
+    			mLastUpdated = currentTime;
+    		}
+    		
+    		GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    		GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+    	    
+    		m_Camera.UpdateCamera();
+    		mObject3dManager.update();
+    		mObject3dManager.draw(m_Camera, m_PointLight);	
+    		
+    		CubeFactory.instance().clean();
     	}
 }
 

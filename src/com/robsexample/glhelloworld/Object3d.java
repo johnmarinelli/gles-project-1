@@ -39,6 +39,10 @@ public class Object3d
 	private float 	m_TargetTime 		= 0;
 	private float 	m_Counter 			= 0;
 	
+	/* flag for removal, if it's out of frustum view */
+	private boolean mFlag = false;
+	/* delta vector for position */
+	private Vector3 mPositionDelta = new Vector3(0.f, 0.f, 0.f);
 
 	Object3d(Context iContext, 
 			 //Mesh iMesh, 
@@ -256,4 +260,29 @@ public class Object3d
 				   m_Orientation.GetScale());
 	}
 	
+	public boolean getFlag() {
+		return mFlag;
+	}
+	
+	public void setFlag(boolean flag) {
+		mFlag = flag;
+	}
+	
+	public Vector3 getPositionDelta() {
+		return mPositionDelta;
+	}
+	
+	public void setPositionDelta(Vector3 delta) {
+		mPositionDelta.x = delta.x;
+		mPositionDelta.y = delta.y;
+		mPositionDelta.z = delta.z;
+	}
+	
+	public void updatePosition() {
+		Vector3 position = this.m_Orientation.GetPosition();
+		Vector3 newPosition = Vector3.Add(position, mPositionDelta);		
+		position.Set(newPosition.x, newPosition.y, newPosition.z);
+		
+		Log.d("position", Float.toString(position.z));
+	}
 }

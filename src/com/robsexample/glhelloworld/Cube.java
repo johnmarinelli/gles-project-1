@@ -44,7 +44,7 @@ public class Cube extends Object3d
 	    	4, 7, 0, 7, 3, 0,	// Top
 	    	5, 6, 1, 6, 2, 1    // Bottom
 	}; // order to draw vertices
-
+	
 	Cube(Context iContext, 
 		 //Mesh iMesh, 
 		 MeshEx iMeshEx, 
