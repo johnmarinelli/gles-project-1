@@ -9,15 +9,15 @@ public class Cube extends Object3d
 	static float CubeData[] = 
 	{ 
 		// x,     y,    z,   u,       v		nx,  ny, nz
-	    -0.5f,  0.5f, 0.5f, 0.0f,   0.0f,   -1,  1, 1, 	// front top left      	0
-	    -0.5f, -0.5f, 0.5f, 0.0f,   1.0f,   -1, -1, 1,	// front bottom left   	1
-	     0.5f, -0.5f, 0.5f, 1.0f,   1.0f,    1, -1, 1, 	// front bottom right	2
-	     0.5f,  0.5f, 0.5f, 1.0f,   0.0f,    1,  1, 1,  // front top right		3
+	    -0.25f,  0.25f, 0.25f, 0.0f,   0.0f,   -1,  1, 1, 	// front top left      	0
+	    -0.25f, -0.25f, 0.25f, 0.0f,   1.0f,   -1, -1, 1,	// front bottom left   	1
+	     0.25f, -0.25f, 0.25f, 1.0f,   1.0f,    1, -1, 1, 	// front bottom right	2
+	     0.25f,  0.25f, 0.25f, 1.0f,   0.0f,    1,  1, 1,  // front top right		3
 	         	
-	    -0.5f,  0.5f, -0.5f, 0.0f,   0.0f,  -1,  1, -1, // back top left		4
-	    -0.5f, -0.5f, -0.5f, 0.0f,   1.0f,  -1, -1, -1,	// back bottom left		5
-	     0.5f, -0.5f, -0.5f, 1.0f,   1.0f,   1, -1, -1, // back bottom right	6
-	     0.5f,  0.5f, -0.5f, 1.0f,   0.0f,   1,  1, -1  // back top right    	7
+	    -0.25f,  0.25f, -0.25f, 0.0f,   0.0f,  -1,  1, -1, // back top left		4
+	    -0.25f, -0.25f, -0.25f, 0.0f,   1.0f,  -1, -1, -1,	// back bottom left		5
+	     0.25f, -0.25f, -0.25f, 1.0f,   1.0f,   1, -1, -1, // back bottom right	6
+	     0.25f,  0.25f, -0.25f, 1.0f,   0.0f,   1,  1, -1  // back top right    	7
 	}; 
 	
 	

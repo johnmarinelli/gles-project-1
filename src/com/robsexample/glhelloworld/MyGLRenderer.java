@@ -20,6 +20,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	private int m_ViewPortWidth;
     private int m_ViewPortHeight;
     
+    private Pyramid mPyramid;
     private Object3dManager mObject3dManager = new Object3dManager();
     private long mLastUpdated;
 	
@@ -83,9 +84,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	        				   Projleft, Projright, 
 	        				   Projbottom,Projtop, 
 	        				   Projnear, Projfar);
-	  }
+	 }
 	    
-	 void CreateCube(Context iContext, Vector3 position)
+	 void createPyramid(Context context, Vector3 position) {
+		 Shader shader = new Shader(context, R.raw.vsonelight, R.raw.fsonelight);
+		 MeshEx pyramidMesh = new MeshEx(5, 0, -1, 3, Pyramid.pyramidDataNoTexture,
+				 Pyramid.pyramidDrawOrder);
+		 
+		 Material material = new Material();
+		 
+		 mPyramid = new Pyramid(context, pyramidMesh, null, material, shader);
+
+		 // Set Intial Position and Orientation
+		 Vector3 Axis = new Vector3(0,1,0);
+		 Vector3 Position = position;
+		 Vector3 Scale = new Vector3(1.0f,1.0f,1.0f);
+        
+		 mPyramid.m_Orientation.SetPosition(Position);
+		 mPyramid.m_Orientation.SetRotationAxis(Axis);
+		 mPyramid.m_Orientation.SetScale(Scale);
+	 }
+	 
+	 Cube CreateCube(Context iContext, Vector3 position)
 	 {
 		 //Create Cube Shader
 		 Shader Shader = new Shader(iContext, R.raw.vsonelight, R.raw.fsonelight);	// ok
@@ -96,13 +116,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 //		int MeshVerticesNormalOffset,
 		 //		float[] Vertices,
 		 //		short[] DrawOrder
-		 MeshEx CubeMesh = new MeshEx(8,0,-1,-1,Cube.CubeData, Cube.CubeDrawOrder);
+		 MeshEx CubeMesh = new MeshEx(8,0,3,5,Cube.CubeData, Cube.CubeDrawOrder);
         
 		 // Create Material for this object
 		 Material Material1 = new Material();
 		 //Material1.SetEmissive(0.0f, 0, 0.25f);
     
-       
 		 // Create Texture
 		 Texture TexAndroid = new Texture(iContext,R.drawable.ic_launcher);		
         
@@ -111,8 +130,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 
 		 Cube cube = CubeFactory.instance().create(iContext, CubeMesh, 
 				 CubeTex, Material1, Shader);     
-		 mObject3dManager.add(cube);
-          
+		 		 
 		 // Set Intial Position and Orientation
 		 Vector3 Axis = new Vector3(0,1,0);
 		 Vector3 Position = position;
@@ -121,6 +139,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 cube.m_Orientation.SetPosition(Position);
 		 cube.m_Orientation.SetRotationAxis(Axis);
 		 cube.m_Orientation.SetScale(Scale);
+		 
+		 return cube;
 		 //m_Cube.m_Orientation.AddRotation(45);
 	 }
 	 
@@ -148,40 +168,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			 m_AccelerometerDeltas.z = 0.f;
 		 }
 		 
+		 mObject3dManager.setPlayerPositionDelta(m_AccelerometerDeltas);
 	 }
 	 
-	 private void updateModelMatrix() {
-		 Cube c = null;
-			 Vector3 position = c.m_Orientation.GetPosition();
-			 /*
-			 if(position.x <= -2 || position.x >= 2) {
-				 //m_CubePositionDelta.Negate();
-			 }
-			 else { */ 
-				 m_CubePositionDelta.x = m_AccelerometerDeltas.x;
-				 m_CubePositionDelta.y = m_AccelerometerDeltas.y;
-				 m_CubePositionDelta.z = m_AccelerometerDeltas.z;
-				 Vector3 newPosition = Vector3.Add(position, m_CubePositionDelta);
-			 	 position.Set(newPosition.x, newPosition.y, newPosition.z);
-			 
-			 /*}*/		  
-			 	 
-			 Vector3 rotationAxis = c.m_Orientation.GetRotationAxis();
-			 m_CubeRotationAxisDelta.x = m_AccelerometerDeltas.x;
-			 m_CubeRotationAxisDelta.y = m_AccelerometerDeltas.y;
-			 Vector3 newRotationAxis = Vector3.Add(rotationAxis, m_CubeRotationAxisDelta);
-			 rotationAxis.Set(newRotationAxis.x, newRotationAxis.y, 0);
-		 
-	 }
-	
     	@Override
     	public void onSurfaceCreated(GL10 unused, EGLConfig config) 
     	{
     		m_PointLight = new PointLight(m_Context);
     		SetupLights();
     		
-    		CreateCube(m_Context, new Vector3(0.f, 0.f, 7.25f));
-    		CreateCube(m_Context, new Vector3(1.f, 1.f, 0.f));
+    		mObject3dManager.addPlayer(
+    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 1.f)));
     	}
 
     	@Override
@@ -207,18 +204,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     			float randomY = Utility.getRandomFloat(-.5f, .5f);
     			float randomZ = Utility.getRandomFloat(-2, 1);
     			
-    			CreateCube(m_Context, new Vector3(randomX, randomY, randomZ));
+    			Cube c = CreateCube(m_Context, new Vector3(randomX, randomY, randomZ));
+   			 	c.setPositionDelta(new Vector3(0.f,0.f,.1f));
+    			mObject3dManager.add(c);    			
     			
     			mLastUpdated = currentTime;
     		}
     		
     		GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-    		GLES20.glClear( GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+    		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
     	    
     		m_Camera.UpdateCamera();
     		mObject3dManager.update();
-    		mObject3dManager.draw(m_Camera, m_PointLight);	
-    		
+    		mObject3dManager.draw(m_Camera, m_PointLight);
     		CubeFactory.instance().clean();
     	}
 }

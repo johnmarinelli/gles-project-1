@@ -41,8 +41,15 @@ public class Object3d
 	
 	/* flag for removal, if it's out of frustum view */
 	private boolean mFlag = false;
+	
 	/* delta vector for position */
 	private Vector3 mPositionDelta = new Vector3(0.f, 0.f, 0.f);
+	
+	/* delta vector for rotation */
+	private Vector3 mRotationAxisDelta = new Vector3(0.f, 0.f, 0.f);
+	
+	/* delta vector for scaling */
+	private Vector3 mScaleDelta = new Vector3(0.f, 0.f, 0.f);
 
 	Object3d(Context iContext, 
 			 //Mesh iMesh, 
@@ -278,11 +285,39 @@ public class Object3d
 		mPositionDelta.z = delta.z;
 	}
 	
+	public void setRotationAxisDelta(Vector3 delta) {
+		mRotationAxisDelta.x = delta.x;
+		mRotationAxisDelta.y = delta.y;
+		mRotationAxisDelta.z = delta.z;
+	}
+	
+	public void setScaleDelta(Vector3 delta) {
+		mScaleDelta.x = delta.x;
+		mScaleDelta.y = delta.y;
+		mScaleDelta.z = delta.z;
+	}
+	
 	public void updatePosition() {
 		Vector3 position = this.m_Orientation.GetPosition();
 		Vector3 newPosition = Vector3.Add(position, mPositionDelta);		
 		position.Set(newPosition.x, newPosition.y, newPosition.z);
-		
-		Log.d("position", Float.toString(position.z));
+	}
+	
+	public void updateRotationAxis() {
+		Vector3 rotationAxis = this.m_Orientation.GetRotationAxis();
+		Vector3 newRotationAxis = Vector3.Add(rotationAxis, mRotationAxisDelta);
+		rotationAxis.Set(newRotationAxis.x, newRotationAxis.y, newRotationAxis.z);
+	}
+
+	public void updateScale() {
+		Vector3 scale = this.m_Orientation.GetScale();
+		Vector3 newScale = Vector3.Add(scale, mScaleDelta);
+		scale.Set(newScale.x, newScale.y, newScale.z);
+	}
+	
+	public void update() {
+		updatePosition();
+		updateRotationAxis();
+		updateScale();
 	}
 }
