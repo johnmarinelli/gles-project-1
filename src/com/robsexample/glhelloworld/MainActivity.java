@@ -66,9 +66,14 @@ public class MainActivity extends Activity implements SensorEventListener{
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {			
 			long currentTime = System.currentTimeMillis();
 			
-			if(currentTime-m_LastUpdated > 1000) {
-				float x = event.values[0];
-				float y = event.values[1];
+			if(currentTime-m_LastUpdated > 200) {
+				/* 
+				 * since we're in landscape mode, x and y are reversed 
+				 * should probably find where in the GL code this is instead of
+				 * hacking it together....
+				 */
+				float x = event.values[1];
+				float y = event.values[0];
 				float z = event.values[2];
 				
 			    m_GLView.updateRenderer(x, y, z);

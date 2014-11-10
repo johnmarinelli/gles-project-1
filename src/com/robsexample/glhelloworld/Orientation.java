@@ -44,7 +44,7 @@ public class Orientation
 		m_Scale		= 	new Vector3(1.0f,1.0f,1.0f);
 		
 		m_RotationAngle = 0;
-		m_RotationAxis 	= 	new Vector3(0.0f, 1.0f, 1.0f);
+		m_RotationAxis 	= 	new Vector3(0.0f, 0.0f, 0.0f);
 			
 		Matrix.setIdentityM(m_OrientationMatrix, 0);
 		Matrix.setIdentityM(m_RotationMatrix, 0);

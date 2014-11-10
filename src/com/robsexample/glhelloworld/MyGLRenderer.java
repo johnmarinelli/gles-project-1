@@ -1,7 +1,5 @@
 package com.robsexample.glhelloworld;
 
-import java.util.ArrayList;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -23,10 +21,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     private Pyramid mPyramid;
     private Object3dManager mObject3dManager = new Object3dManager();
     private long mLastUpdated;
-	
-	private Vector3 m_CubePositionDelta = new Vector3(0.f, 0.f, 0.f);
-	private Vector3 m_CubeRotationAxisDelta = new Vector3(0.f, 0.f, 0.f);
-	private Vector3 m_CubeScale = new Vector3(0.2f, 0.1f, 0.1f);
 	
 	private Vector3 m_AccelerometerDeltas = new Vector3(0.f, 0.f, 0.f);
 		
@@ -147,15 +141,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 public void setAccelerometerDeltas(float x, float y, float z) {
 		 /* for some reason x axis is reversed */
 		 if(Math.abs(x) > .1) {
-			 m_AccelerometerDeltas.x = (float) (x * -.005);
+			 m_AccelerometerDeltas.x = (float) (x * .015);
 		 }
 		 else {
 			 m_AccelerometerDeltas.x = 0.f;
 		 }
 		 
-		 /* and y axis...idk */
-		 if(Math.abs(y) > .1) {
-			 m_AccelerometerDeltas.y = (float) (y * -.005);
+		 /* if y is between 0 and 9, it's facing towards user */
+		 if(y > 0.f && y < 12.f) {
+			 /* ghetto map function from (0,9) to (-6, 6) */
+			 y -= 6.f;
+			 m_AccelerometerDeltas.y = (float) (y * -.015);
+				
+			 Log.d("y", Float.toString(y));
 		 }
 		 else {
 			 m_AccelerometerDeltas.y = 0.f;
@@ -199,13 +197,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     	{
     		long currentTime = System.currentTimeMillis();
     		
-    		if(currentTime - mLastUpdated > 2000) {
-    			float randomX = Utility.getRandomFloat(-.5f, .5f);
-    			float randomY = Utility.getRandomFloat(-.5f, .5f);
-    			float randomZ = Utility.getRandomFloat(-2, 1);
+    		if(currentTime - mLastUpdated > 1000) {
+    			float randomXPos = Utility.getRandomFloat(-1.5f, 1.5f);
+    			float randomYPos = Utility.getRandomFloat(-1.5f, 1.5f);
+    			float randomZPos = Utility.getRandomFloat(-2, 1);
     			
-    			Cube c = CreateCube(m_Context, new Vector3(randomX, randomY, randomZ));
+    			float randomXAxis = Utility.getRandomFloat(-1.f, 1.f);
+    			float randomYAxis = Utility.getRandomFloat(-1.f, 1.f);
+    			float randomZAxis = Utility.getRandomFloat(-1.f, 1.f);
+    			
+    			Cube c = CreateCube(m_Context, new Vector3(randomXPos, 
+    					randomYPos, randomZPos));
    			 	c.setPositionDelta(new Vector3(0.f,0.f,.1f));
+   			 	c.m_Orientation.SetRotationAxis(new Vector3(randomXAxis,
+   			 			randomYAxis, randomZAxis));
+   			 	
     			mObject3dManager.add(c);    			
     			
     			mLastUpdated = currentTime;

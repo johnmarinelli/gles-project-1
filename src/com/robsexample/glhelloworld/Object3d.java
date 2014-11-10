@@ -319,5 +319,13 @@ public class Object3d
 		updatePosition();
 		updateRotationAxis();
 		updateScale();
+		
+		/* 
+		 * quick check to make sure that object isn't player, 
+		 * because player will have an orientation axis of 0, 0, 0
+		 */
+		if(m_Orientation.GetRotationAxis().x != 0.f) {
+			m_Orientation.AddRotation(1.f);
+		}
 	}
 }
