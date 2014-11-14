@@ -212,7 +212,7 @@ public class Object3d
 	     Matrix.transposeM(m_NormalMatrix, 0, m_NormalMatrixInvert, 0);
 	       
 	     // Create Model View Projection Matrix
-	     Matrix.multiplyMM(m_MVPMatrix, 0, Cam.GetProjectionMatrix(), 0, m_ModelViewMatrix, 0);      
+	     Matrix.multiplyMM(m_MVPMatrix, 0, Cam.GetProjectionMatrix(), 0, m_ModelViewMatrix, 0);   
 	 }
 	 
 	void DrawObject(Camera 		Cam,
@@ -297,7 +297,7 @@ public class Object3d
 		mScaleDelta.z = delta.z;
 	}
 	
-	public void updatePosition() {
+	public void updatePosition() {		
 		Vector3 position = this.m_Orientation.GetPosition();
 		Vector3 newPosition = Vector3.Add(position, mPositionDelta);		
 		position.Set(newPosition.x, newPosition.y, newPosition.z);
@@ -316,9 +316,9 @@ public class Object3d
 	}
 	
 	public void update() {
-		updatePosition();
 		updateRotationAxis();
 		updateScale();
+		updatePosition();
 		
 		/* 
 		 * quick check to make sure that object isn't player, 
@@ -327,5 +327,12 @@ public class Object3d
 		if(m_Orientation.GetRotationAxis().x != 0.f) {
 			m_Orientation.AddRotation(1.f);
 		}
+	}
+	
+	public void setPositionDeltaX(float x) {
+		mPositionDelta.x = x;
+	}
+	public void setPositionDeltaY(float y) {
+		mPositionDelta.y = y;
 	}
 }

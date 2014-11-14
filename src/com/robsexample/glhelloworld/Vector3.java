@@ -62,6 +62,14 @@ class Vector3
 	      y = y/l;
 	      z = z/l;
      }
+     
+     Vector3 normalize()
+     {
+    	 float l = Length();
+    	 
+    	 Vector3 v = new Vector3(x/l, y/l, z/l);
+    	 return v;
+     }
 
      float Length()
      {
@@ -78,6 +86,15 @@ class Vector3
     	 result.z= (a.x*b.y) - (a.y*b.x);
     	 
     	 return result;
+     }
+     
+     public String toString() 
+     {
+    	 String sX = Float.toString(x);
+    	 String sY = Float.toString(y);
+    	 String sZ = Float.toString(z);
+    	 
+    	 return "{ x: " + sX + ", y: " + sY + ", z: " + sZ + " } ";
      }
        
 }

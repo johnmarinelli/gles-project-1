@@ -152,8 +152,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 			 /* ghetto map function from (0,9) to (-6, 6) */
 			 y -= 6.f;
 			 m_AccelerometerDeltas.y = (float) (y * -.015);
-				
-			 Log.d("y", Float.toString(y));
 		 }
 		 else {
 			 m_AccelerometerDeltas.y = 0.f;

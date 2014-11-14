@@ -1,12 +1,13 @@
 package com.robsexample.glhelloworld;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.util.Log;
 
 public class Object3dManager {
 	private ArrayList<Object3d> mObjects;
-	private Cube mPlayer;
+	private Cube mPlayer = null;
 	
 	public Object3dManager() {
 		mObjects = new ArrayList<Object3d>();
@@ -29,8 +30,23 @@ public class Object3dManager {
 			}
 		}
 		
+		/*
+		 * LOL BOUNDS CHECKING
+		 */
+		if(mPlayer.m_Orientation.GetPosition().x >= 5.f) {
+			mPlayer.setPositionDeltaX(-0.01f);
+		}
+		else if(mPlayer.m_Orientation.GetPosition().x <= -5.f) {
+			mPlayer.setPositionDeltaX(.01f);
+		}
+		if(mPlayer.m_Orientation.GetPosition().y >= 2.f) {
+			mPlayer.setPositionDeltaY(-.01f);
+		}
+		else if(mPlayer.m_Orientation.GetPosition().y <= -2.f) {
+			mPlayer.setPositionDeltaY(.01f);
+		}
 		mPlayer.update();
-		
+
 		/* clear out dirty objects */
 		for(Object3d dObj : dirty) {
 			mObjects.remove(dObj);
@@ -55,7 +71,7 @@ public class Object3dManager {
 		mPlayer = player;
 	}
 	
-	public void setPlayerPositionDelta(Vector3 posDelta) {
-		mPlayer.setPositionDelta(posDelta);
+	public void setPlayerPositionDelta(Vector3 posDelta) {		
+		if(mPlayer != null) mPlayer.setPositionDelta(posDelta);
 	}
 }

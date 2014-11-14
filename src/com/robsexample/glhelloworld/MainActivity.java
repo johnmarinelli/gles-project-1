@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {			
+		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {		
 			long currentTime = System.currentTimeMillis();
 			
 			if(currentTime-m_LastUpdated > 200) {
