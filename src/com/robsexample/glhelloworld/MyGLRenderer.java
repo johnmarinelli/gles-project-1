@@ -174,7 +174,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		SetupLights();
     		
     		mObject3dManager.addPlayer(
-    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 1.f)));
+    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 4.f)));
     	}
 
     	@Override
@@ -202,7 +202,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     			
     			float randomXAxis = Utility.getRandomFloat(-1.f, 1.f);
     			float randomYAxis = Utility.getRandomFloat(-1.f, 1.f);
-    			float randomZAxis = Utility.getRandomFloat(-1.f, 1.f);
+    			float randomZAxis = Utility.getRandomFloat(-4.f, -3.f);
     			
     			Cube c = CreateCube(m_Context, new Vector3(randomXPos, 
     					randomYPos, randomZPos));

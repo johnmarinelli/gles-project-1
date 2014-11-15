@@ -28,7 +28,9 @@ public class MeshEx
 	private boolean m_MeshHasUV = false;
 	private boolean m_MeshHasNormals = false;
 	
-	
+	private Vector3 mSize = new Vector3(0, 0, 0);
+	private float mRadius = 0.f;
+	private float mRadiusAverage = 0.f;
 	
 	public MeshEx(int CoordsPerVertex, 
 				int MeshVerticesDataPosOffset, 
@@ -157,6 +159,55 @@ public class MeshEx
 	    	GLES20.glDisableVertexAttribArray(NormalHandle);	
 	    	CheckGLError("glDisableVertexAttribArray ERROR - NormalHandle");
 	    }
+	}
+	public void calculateRadius() 
+	{
+		float xMin = 100000000;
+		float yMin = 100000000;
+		float zMin = 100000000;
+		float xMax = -xMin;
+		float yMax = -yMin;
+		float zMax = -zMin;
+		
+		int elementPos = m_MeshVerticesDataPosOffset;
+		
+		//loop through all vertices, and find max/min values of xyz
+		for(int i = 0; i < m_VertexCount; ++i) {
+			float x = m_VertexBuffer.get(elementPos);
+			float y = m_VertexBuffer.get(elementPos+1);
+			float z = m_VertexBuffer.get(elementPos+2);
+			
+			if(x < xMin) xMin = x;
+			if(y < yMin) yMin = y;
+			if(z < zMin) zMin = z;
+			if(x > xMax) xMax = x;
+			if(y > yMax) yMax = y;
+			if(z > zMax) zMax = z;
+			
+			elementPos += m_CoordsPerVertex;
+			
+			// calculate size of mesh in xyz directions
+			mSize.x = Math.abs(xMax - xMin);
+			mSize.y = Math.abs(yMax - yMin);
+			mSize.z = Math.abs(zMax - zMin);
+			
+			// calculate radius.
+			// largestsize will be diameter
+			float largestSize = -1;
+			if(mSize.x > largestSize) largestSize = mSize.x;
+			if(mSize.y > largestSize) largestSize = mSize.y;
+			if(mSize.z > largestSize) largestSize = mSize.z;
+			
+			mRadius = largestSize / 2.0f;
+			
+			//calculate avg radius
+			mRadiusAverage = (mSize.x + mSize.y + mSize.z) / 3.0f;
+			mRadiusAverage /= 2.0f;
+		}
+	}
+	
+	public float getRadius() {
+		return mRadius;
 	}
 	
 }

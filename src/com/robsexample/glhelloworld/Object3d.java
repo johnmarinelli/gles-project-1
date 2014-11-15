@@ -320,6 +320,8 @@ public class Object3d
 		updateScale();
 		updatePosition();
 		
+		m_MeshEx.calculateRadius();
+		
 		/* 
 		 * quick check to make sure that object isn't player, 
 		 * because player will have an orientation axis of 0, 0, 0
@@ -334,5 +336,9 @@ public class Object3d
 	}
 	public void setPositionDeltaY(float y) {
 		mPositionDelta.y = y;
+	}
+	
+	public MeshEx getMesh() {
+		return m_MeshEx;
 	}
 }

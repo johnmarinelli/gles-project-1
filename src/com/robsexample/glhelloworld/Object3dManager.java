@@ -53,6 +53,22 @@ public class Object3dManager {
 		}
 		
 		/* check collision between mObjects & mPlayer */
+		float playerRadius = mPlayer.getMesh().getRadius();
+		Vector3 playerPos = mPlayer.m_Orientation.GetPosition();
+		
+		for(Object3d obj : mObjects) {
+			float objRadius = obj.getMesh().getRadius();
+			float totalRadius = playerRadius + objRadius;
+			
+			Vector3 diff = Vector3.Subtract(obj.m_Orientation.GetPosition(), playerPos);
+			float dis = diff.length();
+			Log.d("dis", Float.toString(dis));
+			Log.d("dis", Float.toString(totalRadius*totalRadius));
+			
+			if(dis < totalRadius*totalRadius) {
+				Log.d("col", "collision");
+			}
+		}
 	}
 	
 	public void draw(Camera camera, PointLight pointlight) {

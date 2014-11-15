@@ -44,6 +44,15 @@ class Vector3
     	  
     	  return result;
       }
+      
+      static Vector3 Subtract(Vector3 vec1, Vector3 vec2) {
+    	  Vector3 r = new Vector3(0, 0, 0);
+    	  r.x = vec1.x - vec2.x;
+    	  r.y = vec1.y - vec2.y;
+    	  r.z = vec1.z - vec2.z;
+    	  
+    	  return r;
+      }
      
       /////////////////////////////////////////////////////////////////////////
       
@@ -86,6 +95,14 @@ class Vector3
     	 result.z= (a.x*b.y) - (a.y*b.x);
     	 
     	 return result;
+     }
+     
+     static float dotProduct(Vector3 a, Vector3 b) {
+    	 return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+     }
+     
+     float length() {
+	     return FloatMath.sqrt(x*x + y*y + z*z);
      }
      
      public String toString() 
