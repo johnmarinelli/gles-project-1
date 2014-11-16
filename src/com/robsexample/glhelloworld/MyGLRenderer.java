@@ -99,7 +99,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 mPyramid.m_Orientation.SetScale(Scale);
 	 }
 	 
-	 Cube CreateCube(Context iContext, Vector3 position)
+	 Cube CreateCube(Context iContext, Vector3 position, boolean enemy)
 	 {
 		 //Create Cube Shader
 		 Shader Shader = new Shader(iContext, R.raw.vsonelight, R.raw.fsonelight);	// ok
@@ -110,7 +110,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 //		int MeshVerticesNormalOffset,
 		 //		float[] Vertices,
 		 //		short[] DrawOrder
-		 MeshEx CubeMesh = new MeshEx(8,0,3,5,Cube.CubeData, Cube.CubeDrawOrder);
+		 float cubeData[] = enemy ? Cube.LargeCubeData : Cube.CubeData;
+		 MeshEx CubeMesh = new MeshEx(8,0,3,5, cubeData, Cube.CubeDrawOrder);
         
 		 // Create Material for this object
 		 Material Material1 = new Material();
@@ -174,7 +175,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		SetupLights();
     		
     		mObject3dManager.addPlayer(
-    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 4.f)));
+    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 4.f), false));
     	}
 
     	@Override
@@ -196,16 +197,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		long currentTime = System.currentTimeMillis();
     		
     		if(currentTime - mLastUpdated > 1000) {
-    			float randomXPos = Utility.getRandomFloat(-1.5f, 1.5f);
-    			float randomYPos = Utility.getRandomFloat(-1.5f, 1.5f);
-    			float randomZPos = Utility.getRandomFloat(-2, 1);
+    			float randomXPos = Utility.getRandomFloat(-2f, 2f);
+    			float randomYPos = Utility.getRandomFloat(-2f, 2f);
+    			float randomZPos = Utility.getRandomFloat(-5.f, -4.f);
     			
     			float randomXAxis = Utility.getRandomFloat(-1.f, 1.f);
     			float randomYAxis = Utility.getRandomFloat(-1.f, 1.f);
-    			float randomZAxis = Utility.getRandomFloat(-4.f, -3.f);
+    			float randomZAxis = Utility.getRandomFloat(-1.f, 1.f);
     			
     			Cube c = CreateCube(m_Context, new Vector3(randomXPos, 
-    					randomYPos, randomZPos));
+    					randomYPos, randomZPos), true);
    			 	c.setPositionDelta(new Vector3(0.f,0.f,.1f));
    			 	c.m_Orientation.SetRotationAxis(new Vector3(randomXAxis,
    			 			randomYAxis, randomZAxis));
