@@ -1,5 +1,9 @@
 package com.robsexample.glhelloworld;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -7,6 +11,8 @@ import android.view.Menu;
 
 import android.opengl.GLSurfaceView;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,6 +23,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 	private MyGLSurfaceView m_GLView;
 	private SensorManager m_SensorManager;
 	private long m_LastUpdated;
+	private MediaPlayer mMediaPlayer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -26,6 +33,23 @@ public class MainActivity extends Activity implements SensorEventListener{
     	// Create a MyGLSurfaceView instance and set it
     	// as the ContentView for this Activity
     	m_GLView = new MyGLSurfaceView(this);
+    	
+    	String mp3File = "raw/schubert-march.mp3";
+    	AssetManager assetManager = getAssets();
+    	mMediaPlayer = new MediaPlayer();
+    	FileInputStream mp3Stream;
+		try {
+			mp3Stream = assetManager.openFd(mp3File)
+					.createInputStream();
+	    	
+	    	mMediaPlayer.setDataSource(mp3Stream.getFD());
+	    	mMediaPlayer.prepare();
+	    	mMediaPlayer.start();
+		} catch (IOException e) {
+			Log.d("exception", e.toString());
+			e.printStackTrace();
+		}
+    	
     	setContentView(m_GLView);
     	m_SensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
     	m_LastUpdated = System.currentTimeMillis();
@@ -36,17 +60,24 @@ public class MainActivity extends Activity implements SensorEventListener{
 	{
 		super.onPause();
     	m_GLView.onPause();
+    	mMediaPlayer.pause();
 	}
 
 	@Override
 	protected void onResume() 
 	{
 		super.onResume();
+    	m_GLView.onResume();
+    	try {
+	    	mMediaPlayer.start();
+		} catch (IllegalStateException e) {
+			Log.d("exception", e.toString());			
+			e.printStackTrace();
+		}
+    	
 		m_SensorManager.registerListener(this, 
 				m_SensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 				m_SensorManager.SENSOR_DELAY_NORMAL);
-		
-    	m_GLView.onResume();
 	}
 	
 	
@@ -95,7 +126,12 @@ class MyGLSurfaceView extends GLSurfaceView
 
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion(2);
-        
+    	
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+    	setBackgroundResource(R.drawable.spacebg);
+    	setZOrderOnTop(true);
+    	        
         // Set the Renderer for drawing on the GLSurfaceView
         m_Renderer = new MyGLRenderer(context);
         setRenderer(m_Renderer);

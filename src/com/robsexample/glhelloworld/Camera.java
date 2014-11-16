@@ -88,8 +88,6 @@ public class Camera
         				  Eye.x, Eye.y, Eye.z,
         				  Center.x, Center.y, Center.z,
         				  Up.x, Up.y, Up.z);
-        
-        Log.d("camera view", Up.toString());
     }
 	
     Vector3 GetCameraEye()

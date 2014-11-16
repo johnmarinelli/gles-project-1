@@ -118,7 +118,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 //Material1.SetEmissive(0.0f, 0, 0.25f);
     
 		 // Create Texture
-		 Texture TexAndroid = new Texture(iContext,R.drawable.ic_launcher);		
+		 Texture TexAndroid = new Texture(iContext,R.drawable.doge);	
         
 		 Texture[] CubeTex = new Texture[1];
 		 CubeTex[0] = TexAndroid;
@@ -216,9 +216,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     			mLastUpdated = currentTime;
     		}
     		
-    		GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    		//GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
-    	    
+
     		m_Camera.UpdateCamera();
     		mObject3dManager.update();
     		mObject3dManager.draw(m_Camera, m_PointLight);

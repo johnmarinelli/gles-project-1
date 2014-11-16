@@ -48,8 +48,12 @@ public class Object3d
 	/* delta vector for rotation */
 	private Vector3 mRotationAxisDelta = new Vector3(0.f, 0.f, 0.f);
 	
+	/* delta float for rotating */
+	private float mRotationDelta = 0.f;
+	
 	/* delta vector for scaling */
 	private Vector3 mScaleDelta = new Vector3(0.f, 0.f, 0.f);
+	
 
 	Object3d(Context iContext, 
 			 //Mesh iMesh, 
@@ -75,6 +79,9 @@ public class Object3d
 		}
 		
 		m_Orientation = new Orientation(m_Context);	
+		while(mRotationDelta == 0) {
+			mRotationDelta = Utility.getRandomInt(-4, 4);
+		}
 	}
 		
 	public void CheckGLError(String glOperation) 
@@ -327,7 +334,7 @@ public class Object3d
 		 * because player will have an orientation axis of 0, 0, 0
 		 */
 		if(m_Orientation.GetRotationAxis().x != 0.f) {
-			m_Orientation.AddRotation(1.f);
+			m_Orientation.AddRotation(mRotationDelta);
 		}
 	}
 	
