@@ -278,7 +278,7 @@ public class Object3d
 		return mFlag;
 	}
 	
-	public void setFlag(boolean flag) {
+	public void setDirtyFlag(boolean flag) {
 		mFlag = flag;
 	}
 	

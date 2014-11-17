@@ -1,16 +1,20 @@
 package com.robsexample.glhelloworld;
 
-import java.text.DecimalFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 
 public class Object3dManager {
 	private ArrayList<Object3d> mObjects;
+	private MediaPlayer mMediaPlayer;
 	private Cube mPlayer = null;
 	
-	public Object3dManager() {
+	public Object3dManager(Context ctx) {
 		mObjects = new ArrayList<Object3d>();
+		mMediaPlayer = MediaPlayer.create(ctx, R.raw.dogecollision);
 	}
 	
 	public void update() {
@@ -25,7 +29,7 @@ public class Object3dManager {
 				obj.update();
 			}
 			else {
-				obj.setFlag(true);
+				obj.setDirtyFlag(true);
 				dirty.add(obj);
 			}
 		}
@@ -46,11 +50,6 @@ public class Object3dManager {
 			mPlayer.setPositionDeltaY(.01f);
 		}
 		mPlayer.update();
-
-		/* clear out dirty objects */
-		for(Object3d dObj : dirty) {
-			mObjects.remove(dObj);
-		}
 		
 		/* check collision between mObjects & mPlayer */
 		float playerRadius = mPlayer.getMesh().getRadius();
@@ -63,8 +62,15 @@ public class Object3dManager {
 			Vector3 diff = Vector3.Subtract(obj.m_Orientation.GetPosition(), playerPos);
 			float dis = diff.length();
 			if(dis < totalRadius*totalRadius) {
-				Log.d("col", "collision");
+				obj.setDirtyFlag(true);
+				dirty.add(obj);
+				mMediaPlayer.start();
 			}
+		}
+
+		/* clear out dirty objects */
+		for(Object3d dObj : dirty) {
+			mObjects.remove(dObj);
 		}
 	}
 	

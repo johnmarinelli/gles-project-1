@@ -19,7 +19,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     private int m_ViewPortHeight;
     
     private Pyramid mPyramid;
-    private Object3dManager mObject3dManager = new Object3dManager();
+    private Object3dManager mObject3dManager;
     private long mLastUpdated;
 	
 	private Vector3 m_AccelerometerDeltas = new Vector3(0.f, 0.f, 0.f);
@@ -27,6 +27,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	public MyGLRenderer(Context context) 
 	{
 	   m_Context = context; 
+	   mObject3dManager = new Object3dManager(context);
 	   mLastUpdated = System.currentTimeMillis();
 	}
 	
