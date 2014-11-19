@@ -1,11 +1,9 @@
 package com.robsexample.glhelloworld;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.util.Log;
 
 public class Object3dManager {
 	private ArrayList<Object3d> mObjects;
@@ -25,7 +23,7 @@ public class Object3dManager {
 			float z = obj.m_Orientation.GetPosition().z;
 			
 			/* check if object is past viewer */
-			if(z < 7.25) {
+			if(z < Utility.EYE_Z_MAX) {
 				obj.update();
 			}
 			else {
@@ -36,9 +34,10 @@ public class Object3dManager {
 		
 		/*
 		 * LOL BOUNDS CHECKING
+		 * these are magic values and i'm very sorry for it
 		 */
 		if(mPlayer.m_Orientation.GetPosition().x >= 5.f) {
-			mPlayer.setPositionDeltaX(-0.01f);
+			mPlayer.setPositionDeltaX(-.01f);
 		}
 		else if(mPlayer.m_Orientation.GetPosition().x <= -5.f) {
 			mPlayer.setPositionDeltaX(.01f);

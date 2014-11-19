@@ -24,6 +24,8 @@ public class GameActivity extends Activity implements SensorEventListener {
 	private SensorManager m_SensorManager;
 	private long m_LastUpdated;
 	private MediaPlayer mMediaPlayer;
+	
+	private boolean mInitialOrientationSet = false;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,7 +48,6 @@ public class GameActivity extends Activity implements SensorEventListener {
 	    	mMediaPlayer.prepare();
 	    	mMediaPlayer.start();
 		} catch (IOException e) {
-			Log.d("exception", e.toString());
 			e.printStackTrace();
 		}
 		
@@ -98,6 +99,11 @@ public class GameActivity extends Activity implements SensorEventListener {
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {		
 			long currentTime = System.currentTimeMillis();
 			
+			if(!mInitialOrientationSet) {
+				m_GLView.setInitialOrientation(event.values[1], event.values[0], event.values[2]);
+				mInitialOrientationSet = true;
+			}
+			
 			if(currentTime-m_LastUpdated > 30) {
 				/* 
 				 * since we're in landscape mode, x and y are reversed 
@@ -136,6 +142,10 @@ class MyGLSurfaceView extends GLSurfaceView
         // Set the Renderer for drawing on the GLSurfaceView
         m_Renderer = new MyGLRenderer(context);
         setRenderer(m_Renderer);
+    }
+    
+    public void setInitialOrientation(float x, float y, float z) {
+    	m_Renderer.setInitialOrientation(x, y, z);
     }
     
     public void updateRenderer(float x, float y, float z) {

@@ -5,7 +5,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.content.Context;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer 
@@ -18,11 +17,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	private int m_ViewPortWidth;
     private int m_ViewPortHeight;
     
-    private Pyramid mPyramid;
     private Object3dManager mObject3dManager;
     private long mLastUpdated;
 	
 	private Vector3 m_AccelerometerDeltas = new Vector3(0.f, 0.f, 0.f);
+	private Vector3 mInitialOrientation = new Vector3(0.f, 0.f, 0.f);
 		
 	public MyGLRenderer(Context context) 
 	{
@@ -60,7 +59,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	 void SetupCamera()
 	 {	
 		// Set Camera View
-		 Vector3 Eye = new Vector3(0,0,10);
+		 Vector3 Eye = new Vector3(0,0, Utility.EYE_Z_MAX);
 	     Vector3 Center = new Vector3(0, 0,-1);
 	     Vector3 Up = new Vector3(0,1,0);  
 	        
@@ -81,25 +80,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 	        				   Projnear, Projfar);
 	 }
 	    
-	 void createPyramid(Context context, Vector3 position) {
-		 Shader shader = new Shader(context, R.raw.vsonelight, R.raw.fsonelight);
-		 MeshEx pyramidMesh = new MeshEx(5, 0, -1, 3, Pyramid.pyramidDataNoTexture,
-				 Pyramid.pyramidDrawOrder);
-		 
-		 Material material = new Material();
-		 
-		 mPyramid = new Pyramid(context, pyramidMesh, null, material, shader);
-
-		 // Set Intial Position and Orientation
-		 Vector3 Axis = new Vector3(0,1,0);
-		 Vector3 Position = position;
-		 Vector3 Scale = new Vector3(1.0f,1.0f,1.0f);
-        
-		 mPyramid.m_Orientation.SetPosition(Position);
-		 mPyramid.m_Orientation.SetRotationAxis(Axis);
-		 mPyramid.m_Orientation.SetScale(Scale);
-	 }
-	 
 	 Cube CreateCube(Context iContext, Vector3 position, boolean enemy)
 	 {
 		 //Create Cube Shader
@@ -137,30 +117,29 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
 		 cube.m_Orientation.SetScale(Scale);
 		 
 		 return cube;
-		 //m_Cube.m_Orientation.AddRotation(45);
 	 }
 	 
 	 public void setAccelerometerDeltas(float x, float y, float z) {
-		 /* for some reason x axis is reversed */
-		 if(Math.abs(x) > .1) {
-			 m_AccelerometerDeltas.x = (float) (x * .015);
+		 if(Math.abs(x) > Utility.MAX_ACCELEROMETER_X_DELTA) {
+			 m_AccelerometerDeltas.x = (float) (x * Utility.ACCELEROMETER_TO_VELOCITY);
 		 }
 		 else {
 			 m_AccelerometerDeltas.x = 0.f;
 		 }
 		 
-		 /* if y is between 0 and 9, it's facing towards user */
-		 if(y > 0.f && y < 12.f) {
-			 /* ghetto map function from (0,9) to (-6, 6) */
+		 if(y > mInitialOrientation.y - Utility.MAX_ACCELEROMETER_Y_DELTA && 
+				 y < mInitialOrientation.y + Utility.MAX_ACCELEROMETER_Y_DELTA) {
+			 /* ghetto map function from (y-10, y+10) to (y-6, y+6) */
 			 y -= 6.f;
-			 m_AccelerometerDeltas.y = (float) (y * -.015);
+			 m_AccelerometerDeltas.y = (float) (y * -Utility.ACCELEROMETER_TO_VELOCITY);
 		 }
 		 else {
 			 m_AccelerometerDeltas.y = 0.f;
 		 }
 		 
-		 if(Math.abs(z) > .1 && Math.abs(z) < 1.5) {
-			 m_AccelerometerDeltas.z = (float) (z * .005);
+		 if(Math.abs(z) > Utility.MIN_ACCELEROMETER_Z_DELTA && 
+				 Math.abs(z) < Utility.MAX_ACCELEROMETER_Z_DELTA) {
+			 m_AccelerometerDeltas.z = (float) (z * Utility.ACCELEROMETER_TO_VELOCITY);
 		 }
 		 else {
 			 m_AccelerometerDeltas.z = 0.f;
@@ -176,7 +155,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		SetupLights();
     		
     		mObject3dManager.addPlayer(
-    				CreateCube(m_Context, new Vector3(0.f, -0.5f, 4.f), false));
+    				CreateCube(m_Context, new Vector3(0.f, 0f, 2.f), false));
     	}
 
     	@Override
@@ -197,10 +176,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     	{
     		long currentTime = System.currentTimeMillis();
     		
-    		if(currentTime - mLastUpdated > 1000) {
-    			float randomXPos = Utility.getRandomFloat(-2f, 2f);
-    			float randomYPos = Utility.getRandomFloat(-2f, 2f);
-    			float randomZPos = Utility.getRandomFloat(-5.f, -4.f);
+    		if(currentTime - mLastUpdated > Utility.GENERATED_CUBE_SPAWN_INTERVAL) {
+    			float randomXPos = Utility.getRandomFloat(-Utility.GENERATED_CUBE_X_POSITION, Utility.GENERATED_CUBE_X_POSITION);
+    			float randomYPos = Utility.getRandomFloat(-Utility.GENERATED_CUBE_Y_POSITION, Utility.GENERATED_CUBE_Y_POSITION);
+    			float randomZPos = Utility.getRandomFloat(Utility.GENERATED_CUBE_Z_POSITION_MIN, Utility.GENERATED_CUBE_Z_POSITION_MAX);
     			
     			float randomXAxis = Utility.getRandomFloat(-1.f, 1.f);
     			float randomYAxis = Utility.getRandomFloat(-1.f, 1.f);
@@ -208,7 +187,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     			
     			Cube c = CreateCube(m_Context, new Vector3(randomXPos, 
     					randomYPos, randomZPos), true);
-   			 	c.setPositionDelta(new Vector3(0.f,0.f,.1f));
+   			 	c.setPositionDelta(Utility.GENERATED_CUBE_POSITION_DELTA);
    			 	c.m_Orientation.SetRotationAxis(new Vector3(randomXAxis,
    			 			randomYAxis, randomZAxis));
    			 	
@@ -225,5 +204,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     		mObject3dManager.draw(m_Camera, m_PointLight);
     		CubeFactory.instance().clean();
     	}
+
+		public void setInitialOrientation(float x, float y, float z) {
+			mInitialOrientation.x = x;
+			mInitialOrientation.y = y;
+			mInitialOrientation.z = z;
+		}
 }
 
